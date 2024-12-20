@@ -6,6 +6,7 @@ load(
     "DEFAULT_BATS_REPOSITORY",
     "DEFAULT_COPY_DIRECTORY_REPOSITORY",
     "DEFAULT_COPY_TO_DIRECTORY_REPOSITORY",
+    "DEFAULT_COPY_FILE_REPOSITORY",
     "DEFAULT_COREUTILS_REPOSITORY",
     "DEFAULT_COREUTILS_VERSION",
     "DEFAULT_EXPAND_TEMPLATE_REPOSITORY",
@@ -18,6 +19,7 @@ load(
     "register_bats_toolchains",
     "register_copy_directory_toolchains",
     "register_copy_to_directory_toolchains",
+    "register_copy_file_toolchains",
     "register_coreutils_toolchains",
     "register_expand_template_toolchains",
     "register_jq_toolchains",
@@ -59,6 +61,14 @@ def _toolchains_extension_impl(mctx):
         get_tag_fn = lambda tags: tags.copy_to_directory,
         toolchain_name = "copy_to_directory",
         toolchain_repos_fn = lambda name, version: register_copy_to_directory_toolchains(name = name, register = False),
+        get_version_fn = lambda attr: None,
+    )
+
+    extension_utils.toolchain_repos_bfs(
+        mctx = mctx,
+        get_tag_fn = lambda tags: tags.copy_file,
+        toolchain_name = "copy_file",
+        toolchain_repos_fn = lambda name, version: register_copy_file_toolchains(name = name, register = False),
         get_version_fn = lambda attr: None,
     )
 
@@ -128,6 +138,7 @@ toolchains = module_extension(
     tag_classes = {
         "copy_directory": tag_class(attrs = {"name": attr.string(default = DEFAULT_COPY_DIRECTORY_REPOSITORY)}),
         "copy_to_directory": tag_class(attrs = {"name": attr.string(default = DEFAULT_COPY_TO_DIRECTORY_REPOSITORY)}),
+        "copy_file": tag_class(attrs = {"name": attr.string(default = DEFAULT_COPY_FILE_REPOSITORY)}),
         "jq": tag_class(attrs = {"name": attr.string(default = DEFAULT_JQ_REPOSITORY), "version": attr.string(default = DEFAULT_JQ_VERSION)}),
         "yq": tag_class(attrs = {"name": attr.string(default = DEFAULT_YQ_REPOSITORY), "version": attr.string(default = DEFAULT_YQ_VERSION)}),
         "coreutils": tag_class(attrs = {"name": attr.string(default = DEFAULT_COREUTILS_REPOSITORY), "version": attr.string(default = DEFAULT_COREUTILS_VERSION)}),

@@ -18,15 +18,14 @@ These rules copy a file to another location using hermetic uutils/coreutils `cp`
 `_copy_xfile` marks the resulting file executable, `_copy_file` does not.
 """
 
-load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
 load(":directory_path.bzl", "DirectoryPathInfo")
 
-_COREUTILS_TOOLCHAIN = "@aspect_bazel_lib//lib:coreutils_toolchain_type"
+_COPY_FILE_TOOLCAHIN = "@aspect_bazel_lib//lib:copy_file_toolchain_type"
 
 # Declare toolchains used by copy file actions so that downstream rulesets can pass it into
 # the `toolchains` attribute of their rule.
 COPY_FILE_TOOLCHAINS = [
-    _COREUTILS_TOOLCHAIN,
+    _COPY_FILE_TOOLCAHIN,
 ]
 
 def copy_file_action(ctx, src, dst, dir_path = None):
@@ -75,17 +74,23 @@ def copy_file_action(ctx, src, dst, dir_path = None):
     else:
         src_path = src.path
 
-    coreutils = ctx.toolchains[_COREUTILS_TOOLCHAIN].coreutils_info
+    args_file = ctx.actions.declare_file(ctx.label.name + src_path.replace("/", "_").replace(".", "_") + "_args_file")
+    ctx.actions.write(
+        output = args_file,
+        content = "\n".join(["-src", src_path, "-dst", dst.path]),
+    )
 
     ctx.actions.run(
-        executable = coreutils.bin,
-        arguments = ["cp", src_path, dst.path],
-        inputs = [src],
+        executable = ctx.toolchains[_COPY_FILE_TOOLCAHIN].copy_file.bin,
+        arguments = ["@%s" % args_file.path],
+        inputs = [src, args_file],
         outputs = [dst],
         mnemonic = "CopyFile",
-        progress_message = "Copying file %{input}",
-        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
-        toolchain = "@aspect_bazel_lib//lib:coreutils_toolchain_type",
+        progress_message = "Copying file %s" % _progress_path(src),
+        execution_requirements = {
+            "supports-workers": "1",
+            "requires-worker-protocol": "proto",
+        },
     )
 
 def _copy_file_impl(ctx):
@@ -125,6 +130,11 @@ _ATTRS = {
     "is_executable": attr.bool(mandatory = True),
     "allow_symlink": attr.bool(mandatory = True),
     "out": attr.output(mandatory = True),
+    "_copy_file": attr.label(
+        default = Label("//tools/copy_file"),
+        executable = True,
+        cfg = "exec",
+    ),
 }
 
 _copy_file = rule(

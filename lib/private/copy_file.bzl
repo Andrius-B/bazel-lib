@@ -77,7 +77,7 @@ def copy_file_action(ctx, src, dst, dir_path = None):
     args_file = ctx.actions.declare_file(ctx.label.name + src_path.replace("/", "_").replace(".", "_") + "_args_file")
     ctx.actions.write(
         output = args_file,
-        content = "\n".join(["-src", src_path, "-dst", dst.path]),
+        content = "\n".join(["--src", src_path, "--dest", dst.path]),
     )
 
     ctx.actions.run(
@@ -86,7 +86,7 @@ def copy_file_action(ctx, src, dst, dir_path = None):
         inputs = [src, args_file],
         outputs = [dst],
         mnemonic = "CopyFile",
-        progress_message = "Copying file %s" % _progress_path(src),
+        progress_message = "Copying file {}".format(src),
         execution_requirements = {
             "supports-workers": "1",
             "requires-worker-protocol": "proto",

@@ -14,6 +14,7 @@ import (
 func CopyFile(src string, dst string) error {
 	source, err := os.Open(src)
 	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error opening source file: %v\n", src)
 		return err
 	}
 	defer source.Close()

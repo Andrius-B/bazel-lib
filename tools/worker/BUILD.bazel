@@ -2,15 +2,11 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "worker",
-    embed = [":worker_go_proto"],
-    importpath = "proto/worker",
-    visibility = ["//visibility:public"],
-)
-
-go_library(
-    name = "proto",
-    srcs = ["worker_protocol.pb.go"],
-    importpath = "github.com/bazel-contrib/bazel-lib/tools/proto",
+    srcs = [
+        "worker.go",
+        "worker_protocol.pb.go",
+    ],
+    importpath = "github.com/bazel-contrib/bazel-lib/tools/worker",
     visibility = ["//visibility:public"],
     deps = [
         "@org_golang_google_protobuf//reflect/protoreflect",

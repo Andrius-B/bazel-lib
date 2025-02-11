@@ -18,6 +18,7 @@ bazel_dep(name = "stardoc", version = "0.6.2", repo_name = "io_bazel_stardoc")
 bazel_lib_toolchains = use_extension("@aspect_bazel_lib//lib:extensions.bzl", "toolchains")
 bazel_lib_toolchains.copy_directory()
 bazel_lib_toolchains.copy_to_directory()
+bazel_lib_toolchains.copy_file()
 bazel_lib_toolchains.jq()
 bazel_lib_toolchains.yq()
 bazel_lib_toolchains.coreutils()
@@ -25,11 +26,12 @@ bazel_lib_toolchains.tar()
 bazel_lib_toolchains.zstd()
 bazel_lib_toolchains.expand_template()
 bazel_lib_toolchains.bats()
-use_repo(bazel_lib_toolchains, "bats_toolchains", "bsd_tar_toolchains", "copy_directory_toolchains", "copy_to_directory_toolchains", "coreutils_toolchains", "expand_template_toolchains", "jq", "jq_toolchains", "yq", "yq_toolchains", "zstd_toolchains")
+use_repo(bazel_lib_toolchains, "bats_toolchains", "bsd_tar_toolchains", "copy_directory_toolchains", "copy_to_directory_toolchains", "copy_file_toolchains", "coreutils_toolchains", "expand_template_toolchains", "jq", "jq_toolchains", "yq", "yq_toolchains", "zstd_toolchains")
 
 register_toolchains(
     "@copy_directory_toolchains//:all",
     "@copy_to_directory_toolchains//:all",
+    "@copy_file_toolchains//:all",
     "@jq_toolchains//:all",
     "@yq_toolchains//:all",
     "@coreutils_toolchains//:all",
@@ -68,6 +70,7 @@ use_repo(
     "com_github_bmatcuk_doublestar_v4",
     "org_golang_x_exp",
     "org_golang_x_sys",
+    "org_golang_google_protobuf",
 )
 
 host = use_extension("@aspect_bazel_lib//lib:extensions.bzl", "host", dev_dependency = True)

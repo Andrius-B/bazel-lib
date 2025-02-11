@@ -59,6 +59,10 @@ toolchain_type(
 )
 
 toolchain_type(
+    name = "copy_file_toolchain_type",
+)
+
+toolchain_type(
     name = "coreutils_toolchain_type",
 )
 

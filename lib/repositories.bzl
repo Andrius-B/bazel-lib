@@ -3,6 +3,7 @@
 load("//lib:utils.bzl", http_archive = "maybe_http_archive")
 load("//lib/private:bats_toolchain.bzl", "BATS_ASSERT_VERSIONS", "BATS_CORE_TEMPLATE", "BATS_CORE_VERSIONS", "BATS_FILE_VERSIONS", "BATS_LIBRARY_TEMPLATE", "BATS_SUPPORT_VERSIONS")
 load("//lib/private:copy_directory_toolchain.bzl", "COPY_DIRECTORY_PLATFORMS", "copy_directory_platform_repo", "copy_directory_toolchains_repo")
+load("//lib/private:copy_file_toolchain.bzl", "COPY_FILE_PLATFORMS", "copy_file_platform_repo", "copy_file_toolchains_repo")
 load("//lib/private:copy_to_directory_toolchain.bzl", "COPY_TO_DIRECTORY_PLATFORMS", "copy_to_directory_platform_repo", "copy_to_directory_toolchains_repo")
 load("//lib/private:coreutils_toolchain.bzl", "COREUTILS_PLATFORMS", "coreutils_platform_repo", "coreutils_toolchains_repo", _DEFAULT_COREUTILS_VERSION = "DEFAULT_COREUTILS_VERSION")
 load("//lib/private:expand_template_toolchain.bzl", "EXPAND_TEMPLATE_PLATFORMS", "expand_template_platform_repo", "expand_template_toolchains_repo")
@@ -298,6 +299,41 @@ def register_copy_to_directory_toolchains(name = DEFAULT_COPY_TO_DIRECTORY_REPOS
         name = "%s_toolchains" % name,
         user_repository_name = name,
     )
+
+DEFAULT_COPY_FILE_REPOSITORY = "copy_file"
+
+def register_copy_file_toolchains(name = DEFAULT_COPY_FILE_REPOSITORY, register = True):
+    """Registers copy_file toolchain and repositories
+
+    Args:
+        name: override the prefix for the generated toolchain repositories
+        register: whether to call through to native.register_toolchains.
+            Should be True for WORKSPACE users, but false when used under bzlmod extension
+    """
+    source_toolchains_repo(
+        name = "%s_toolchains" % name,
+        toolchain_type = "@aspect_bazel_lib//lib:copy_file_toolchain_type",
+        toolchain_rule_load_from = "@aspect_bazel_lib//lib/private:copy_file_toolchain.bzl",
+        toolchain_rule = "copy_file_toolchain",
+        binary = "@aspect_bazel_lib//tools/copy_file",
+    )
+    if register:
+        native.register_toolchains("@%s_toolchains//:toolchain" % name)
+    return
+
+    # TODO release:
+    # for [platform, _] in COPY_TO_DIRECTORY_PLATFORMS.items():
+    #     copy_to_directory_platform_repo(
+    #         name = "%s_%s" % (name, platform),
+    #         platform = platform,
+    #     )
+    #     if register:
+    #         native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
+
+    # copy_to_directory_toolchains_repo(
+    #     name = "%s_toolchains" % name,
+    #     user_repository_name = name,
+    # )
 
 DEFAULT_EXPAND_TEMPLATE_REPOSITORY = "expand_template"
 

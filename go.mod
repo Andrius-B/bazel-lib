@@ -9,4 +9,5 @@ require (
 	github.com/bmatcuk/doublestar/v4 v4.7.1
 	golang.org/x/exp v0.0.0-20240823005443-9b4947da3948
 	golang.org/x/sys v0.29.0
+	google.golang.org/protobuf v1.31.0
 )
